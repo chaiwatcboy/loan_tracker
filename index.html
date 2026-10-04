@@ -80,7 +80,6 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
-    <!-- Top Navigation & Profile Switcher Header -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs no-print">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 gap-3">
@@ -155,7 +154,6 @@
         </div>
     </header>
 
-    <!-- Main Content Application Workspace -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
         <!-- Top Overview Status Hero -->
@@ -217,7 +215,6 @@
             <!-- Rendered by window.renderOverview() -->
         </div>
 
-        <!-- Action Row: Payment Entry Form & Strategy Planner -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
             <!-- Left Column: Payment & Prepayment Recording Box (7 Cols) -->
@@ -289,7 +286,7 @@
                         </div>
                     </div>
 
-                    <!-- Interest Split Section (Preserved DOM Architecture to prevent null references) -->
+                    <!-- Interest Split Section -->
                     <div id="interest-split-container" class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                         
                         <!-- Normal Mode Display Block -->
@@ -311,7 +308,7 @@
                             </div>
                         </div>
 
-                        <!-- Prepayment Mode Display Block (Toggled smoothly) -->
+                        <!-- Prepayment Mode Display Block -->
                         <div id="split-block-prepay" class="hidden space-y-1.5">
                             <div class="flex items-center justify-between text-xs font-bold text-emerald-900">
                                 <span class="flex items-center gap-1.5"><i class="ph-fill ph-lightning text-amber-500"></i> โหมดโปะเพิ่มวันเดียวกัน:</span>
@@ -385,22 +382,27 @@
                             <span>คำนวณงบผ่อนย้อนกลับ (ตามอายุเป้าหมาย)</span>
                         </h3>
                     </div>
-                    <p class="text-xs text-slate-500">อยากหมดหนี้ก่อนอายุเท่าไหร่? ระบบจะคำนวณยอดผ่อนรายเดือนที่ต้องจ่ายให้ทันที</p>
+                    <p class="text-xs text-slate-500">อยากหมดหนี้ก่อนอายุเท่าไหร่? ระบุอายุปัจจุบันและอายุเป้าหมาย ระบบจะคำนวณยอดผ่อนรายเดือนให้ทันที</p>
                     
-                    <div class="flex items-center gap-3">
-                        <div class="w-1/2">
-                            <label class="text-[11px] text-slate-500 font-medium">เป้าหมายอายุหมดหนี้ (ปี)</label>
-                            <input type="number" step="0.5" min="36" max="75" id="target-age-input" value="50" onchange="calculateReverseTargetPayoff()" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:border-indigo-500 focus:outline-none">
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-end">
+                        <div class="sm:col-span-4">
+                            <label class="text-[11px] text-slate-500 font-medium">อายุปัจจุบัน (ปี)</label>
+                            <input type="number" step="0.5" min="18" max="85" id="current-age-input" value="30" oninput="onAgeInputsChange()" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:border-indigo-500 focus:outline-none">
                         </div>
-                        <div class="w-1/2 flex items-end">
-                            <button type="button" onclick="calculateReverseTargetPayoff()" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition shadow-xs active:scale-95">
-                                คำนวณยอดผ่อน
+                        <div class="sm:col-span-4">
+                            <label class="text-[11px] text-slate-500 font-medium">เป้าหมายอายุหมดหนี้ (ปี)</label>
+                            <input type="number" step="0.5" min="19" max="95" id="target-age-input" value="50" oninput="onAgeInputsChange()" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:border-indigo-500 focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-4">
+                            <button type="button" onclick="calculateReverseTargetPayoff()" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition shadow-xs active:scale-95 flex items-center justify-center gap-1">
+                                <i class="ph-bold ph-calculator"></i>
+                                <span>คำนวณยอดผ่อน</span>
                             </button>
                         </div>
                     </div>
 
                     <div id="target-age-result" class="p-3.5 bg-slate-50 rounded-xl border border-slate-100 text-xs space-y-1.5">
-                        <!-- Populated by window.calculateReverseTargetPayoff() -->
+                        <!-- Populated by calculateReverseTargetPayoff() -->
                     </div>
                 </div>
 
@@ -408,7 +410,6 @@
 
         </div>
 
-        <!-- Budget Matrix Comparison (5 Levels) -->
         <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
                 <div>
@@ -439,7 +440,6 @@
             </div>
         </div>
 
-        <!-- Chart Projection & Retention / Refinance Simulator -->
         <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
                 <div>
@@ -555,7 +555,6 @@
             </div>
         </div>
 
-        <!-- History Log Table -->
         <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
@@ -885,7 +884,7 @@
         </div>
     </div>
 
-    <!-- MODAL 4: Opportunity Cost Calculator Modal (Prepay vs High Interest Deposit) -->
+    <!-- MODAL 4: Opportunity Cost Calculator Modal -->
     <div id="opportunity-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -962,7 +961,7 @@
         </div>
     </div>
 
-    <!-- MODAL 6: Direct Loan Principal Edit Modal (To match bank app) -->
+    <!-- MODAL 6: Direct Loan Principal Edit Modal -->
     <div id="edit-loan-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -1025,7 +1024,7 @@
         </div>
     </div>
 
-    <!-- MODAL 8: Edit Schedule Month Modal (Manual Override) -->
+    <!-- MODAL 8: Edit Schedule Month Modal -->
     <div id="edit-schedule-month-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -1078,7 +1077,7 @@
         </div>
     </div>
 
-    <!-- MODAL 9: Custom Confirmation Modal (Never browser alert) -->
+    <!-- MODAL 9: Custom Confirmation Modal -->
     <div id="confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
             <h3 class="text-base font-bold text-slate-900" id="confirm-modal-title">ยืนยันการทำรายการ</h3>
@@ -1179,7 +1178,7 @@
                 principal: 1048473.51,
                 initialPrincipal: 1050909.21,
                 minPay: 4300,
-                lastPaidDate: new Date().toISOString().split('T')[0],
+                lastPaidDate: new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0],
                 color: "indigo",
                 icon: "ph-house"
             },
@@ -1190,7 +1189,7 @@
                 principal: 45240.96,
                 initialPrincipal: 46640.89,
                 minPay: 600,
-                lastPaidDate: new Date().toISOString().split('T')[0],
+                lastPaidDate: new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0],
                 color: "rose",
                 icon: "ph-shield-warning"
             },
@@ -1201,7 +1200,7 @@
                 principal: 39781.31,
                 initialPrincipal: 39999.00,
                 minPay: 300,
-                lastPaidDate: new Date().toISOString().split('T')[0],
+                lastPaidDate: new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0],
                 color: "emerald",
                 icon: "ph-shield-check"
             }
@@ -1290,6 +1289,11 @@
                     window.profilesStore[window.activeProfileId].strategy = currentStrategy;
                     window.profilesStore[window.activeProfileId].retentionRate = customRetentionRate;
                     window.profilesStore[window.activeProfileId].scheduleOverrides = window.scheduleOverrides;
+
+                    const curAgeVal = parseFloat(document.getElementById('current-age-input')?.value);
+                    const tarAgeVal = parseFloat(document.getElementById('target-age-input')?.value);
+                    if (!isNaN(curAgeVal)) window.profilesStore[window.activeProfileId].currentAge = curAgeVal;
+                    if (!isNaN(tarAgeVal)) window.profilesStore[window.activeProfileId].targetAge = tarAgeVal;
                 }
                 const manifest = {
                     activeProfileId: window.activeProfileId,
@@ -1321,6 +1325,12 @@
 
             const retInput = document.getElementById('retention-custom-rate');
             if (retInput) retInput.value = customRetentionRate.toFixed(2);
+
+            // Sync Current Age & Target Age
+            const curAgeInput = document.getElementById('current-age-input');
+            if (curAgeInput) curAgeInput.value = p.currentAge !== undefined ? p.currentAge : 30;
+            const tarAgeInput = document.getElementById('target-age-input');
+            if (tarAgeInput) tarAgeInput.value = p.targetAge !== undefined ? p.targetAge : 50;
 
             updateStrategyUI();
             renderProfileSelector();
@@ -1408,7 +1418,6 @@
             );
         };
 
-        /* --- 3. OVERVIEW CARDS & WORKSPACE RENDERING --- */
         window.renderOverview = function() {
             let totalBalance = 0;
             const activeLoans = (window.loans || []).filter(l => l.principal > 0);
@@ -1556,7 +1565,6 @@
             calculateReverseTargetPayoff();
         };
 
-        /* --- 4. PAYMENT HANDLING & MODE MANAGEMENT --- */
         window.setPaymentMode = function(mode) {
             currentPaymentMode = mode;
             const tabNormal = document.getElementById('tab-mode-normal');
@@ -1575,7 +1583,7 @@
                 if (blockPrepay) blockPrepay.classList.remove('hidden');
 
                 const interestInput = document.getElementById('pay-interest');
-                if (interestInput) interestInput.value = 0;
+                if (interestInput) interestInput.value = '0.00';
 
                 const curAmount = parseFloat(document.getElementById('pay-amount')?.value) || 0;
                 const prepayPreview = document.getElementById('prepay-net-principal-preview');
@@ -1604,6 +1612,8 @@
         function updateLoanDropdowns() {
             const paySelect = document.getElementById('pay-loan-select');
             const oppSelect = document.getElementById('opp-modal-loan-select');
+            const prevPayVal = paySelect ? paySelect.value : null;
+
             if (paySelect) paySelect.innerHTML = '';
             if (oppSelect) oppSelect.innerHTML = '';
 
@@ -1625,12 +1635,23 @@
                 if (oppSelect) oppSelect.appendChild(opt2);
             });
 
+            if (prevPayVal && (window.loans || []).some(l => l.id == prevPayVal)) {
+                paySelect.value = prevPayVal;
+            }
+
             onPaymentLoanChange();
         }
 
         window.onPaymentLoanChange = function() {
+            // Reset interest input to clear any previous loan's calculation
+            const interestInput = document.getElementById('pay-interest');
+            if (interestInput) interestInput.value = '';
+
             if (currentPaymentMode === 'normal') {
                 fillMinPayment();
+            } else {
+                const curAmount = parseFloat(document.getElementById('pay-amount')?.value) || 0;
+                onPayAmountInput(curAmount);
             }
         };
 
@@ -1719,8 +1740,14 @@
 
             let days = 30;
             if (loan.lastPaidDate) {
-                const diffTime = Math.abs(new Date(payDateVal) - new Date(loan.lastPaidDate));
-                days = Math.max(1, Math.round(diffTime / (1000 * 60 * 60 * 24)));
+                const d1 = new Date(payDateVal);
+                const d2 = new Date(loan.lastPaidDate);
+                const diffTime = Math.round((d1 - d2) / (1000 * 60 * 60 * 24));
+                if (diffTime > 0) {
+                    days = diffTime;
+                } else {
+                    days = 30; // Default to standard monthly interest cycle if recorded on same day
+                }
             }
 
             const calculatedInterest = (loan.principal * (loan.rate / 100) * days) / 365;
@@ -1820,6 +1847,7 @@
             window.historyLogs.push(logItem);
             saveProfilesManifest();
 
+            updateLoanDropdowns();
             renderOverview();
             renderHistoryTable();
             renderAmortizationSchedule();
@@ -1898,13 +1926,13 @@
 
             saveProfilesManifest();
             closeDirectEditModal();
+            updateLoanDropdowns();
             renderOverview();
             renderHistoryTable();
             renderAmortizationSchedule();
             showToast(`ปรับยอด "${loan.name}" ตรงแอปธนาคารเรียบร้อย`);
         };
 
-        /* --- 5. AMORTIZATION SIMULATION ENGINE --- */
         function simulatePayoffScenario(monthlyBudget, strat = currentStrategy, customRate = customRetentionRate) {
             if (!window.loans || window.loans.length === 0) {
                 return { months: 0, totalInterest: 0, payoffDateStr: '-', monthlySchedule: [] };
@@ -2075,7 +2103,6 @@
                 tr.className = r.isOverridden ? "bg-amber-50/70 hover:bg-amber-100/60 transition" : "hover:bg-slate-50 transition";
 
                 if (isScheduleInlineEditActive) {
-                    // Inline Interactive Inputs Mode
                     tr.innerHTML = `
                         <td class="py-2.5 px-3 text-center font-bold text-slate-500">${r.idx}</td>
                         <td class="py-2.5 px-3 whitespace-nowrap font-medium text-slate-800">${escapeHtml(r.dateStr)}</td>
@@ -2097,7 +2124,6 @@
                         </td>
                     `;
                 } else {
-                    // Standard Clean Table Mode
                     tr.innerHTML = `
                         <td class="py-3 px-3 text-center font-bold text-slate-500">${r.idx}</td>
                         <td class="py-3 px-3 whitespace-nowrap font-medium text-slate-800">
@@ -2166,7 +2192,6 @@
             renderAmortizationSchedule();
         };
 
-        /* --- 6. BUDGET MATRIX & GOAL CALCULATIONS --- */
         window.renderBudgetComparisonMatrix = function() {
             const tbody = document.getElementById('budget-matrix-tbody');
             if (!tbody) return;
@@ -2210,19 +2235,33 @@
             });
         };
 
+        window.onAgeInputsChange = function() {
+            saveProfilesManifest();
+            calculateReverseTargetPayoff();
+        };
+
         window.calculateReverseTargetPayoff = function() {
             if (!window.loans || window.loans.length === 0) {
                 const res = document.getElementById('target-age-result');
                 if (res) res.innerHTML = `<span class="text-slate-400">กรุณากรอกสัญญาหนี้เพื่อคำนวณ</span>`;
                 return;
             }
+            const currentAgeInput = document.getElementById('current-age-input');
             const targetAgeInput = document.getElementById('target-age-input');
+
+            const currentAge = parseFloat(currentAgeInput?.value);
             const targetAge = parseFloat(targetAgeInput?.value);
-            const currentAge = 35.0;
+
+            const res = document.getElementById('target-age-result');
+            if (!res) return;
+
+            if (isNaN(currentAge) || currentAge < 15 || currentAge > 100) {
+                res.innerHTML = `<span class="text-rose-600 font-bold">⚠ กรุณาระบุอายุปัจจุบันให้ถูกต้อง (15–100 ปี)</span>`;
+                return;
+            }
 
             if (isNaN(targetAge) || targetAge <= currentAge) {
-                const res = document.getElementById('target-age-result');
-                if (res) res.innerHTML = `<span class="text-rose-600 font-bold">⚠️️ อายุเป้าหมายต้องมากกว่าอายุปัจจุบัน (${currentAge} ปี)</span>`;
+                res.innerHTML = `<span class="text-rose-600 font-bold">⚠ อายุเป้าหมาย (${isNaN(targetAge) ? 0 : targetAge} ปี) ต้องมากกว่าอายุปัจจุบัน (${currentAge} ปี)</span>`;
                 return;
             }
 
@@ -2233,11 +2272,11 @@
             const totalPrincipal = window.loans.reduce((sum, l) => sum + (l.principal || 0), 0);
 
             let low = totalMin;
-            let high = Math.max(totalMin * 10, (totalPrincipal / targetMonths) * 2.5, 300000);
+            let high = Math.max(totalMin * 20, (totalPrincipal / targetMonths) * 5, 500000);
             let bestBudget = high;
 
-            // Binary search 15 iterations to determine exact budget
-            for (let iter = 0; iter < 15; iter++) {
+            // 18 binary search iterations for precise baht accuracy
+            for (let iter = 0; iter < 18; iter++) {
                 const mid = (low + high) / 2;
                 const sim = simulatePayoffScenario(mid);
                 if (sim.months <= targetMonths) {
@@ -2251,26 +2290,23 @@
             const neededBudget = Math.ceil(bestBudget / 50) * 50;
             const extraFromMin = Math.max(0, neededBudget - totalMin);
 
-            const resultContainer = document.getElementById('target-age-result');
-            if (resultContainer) {
-                resultContainer.innerHTML = `
-                    <div class="flex items-center justify-between text-slate-700">
-                        <span>เวลาที่มี:</span>
-                        <strong class="text-slate-900">${yearsAllowed.toFixed(1)} ปี (${targetMonths} งวด)</strong>
-                    </div>
-                    <div class="flex items-center justify-between text-indigo-700">
-                        <span>ยอดผ่อนที่ต้องจ่าย:</span>
-                        <strong class="text-sm font-black text-indigo-600">${formatMoney(neededBudget)} / เดือน</strong>
-                    </div>
-                    <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100">
-                        <span>ต้องโปะเพิ่มจากขั้นต่ำ:</span>
-                        <span class="font-bold text-amber-600">+${formatMoney(extraFromMin)} / เดือน</span>
-                    </div>
-                    <button type="button" onclick="setQuickBudget(${neededBudget})" class="mt-2 w-full py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-lg text-xs transition">
-                        นำยอด ${formatNumber(neededBudget)} บ. ไปใส่ตารางจำลอง
-                    </button>
-                `;
-            }
+            res.innerHTML = `
+                <div class="flex items-center justify-between text-slate-700">
+                    <span>เวลาผ่อนที่มี:</span>
+                    <strong class="text-slate-900">${yearsAllowed.toFixed(1)} ปี (${targetMonths} งวด)</strong>
+                </div>
+                <div class="flex items-center justify-between text-indigo-700">
+                    <span>ยอดผ่อนที่ต้องจ่าย:</span>
+                    <strong class="text-sm font-black text-indigo-600">${formatMoney(neededBudget)} / เดือน</strong>
+                </div>
+                <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100">
+                    <span>ต้องโปะเพิ่มจากขั้นต่ำ:</span>
+                    <span class="font-bold text-amber-600">+${formatMoney(extraFromMin)} / เดือน</span>
+                </div>
+                <button type="button" onclick="setQuickBudget(${neededBudget})" class="mt-2 w-full py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-lg text-xs transition">
+                    นำยอด ${formatNumber(neededBudget)} บ. ไปใส่ตารางจำลอง
+                </button>
+            `;
         };
 
         window.setQuickBudget = function(amt) {
@@ -2299,7 +2335,6 @@
             renderAmortizationSchedule();
         };
 
-        /* --- 7. PAYOFF PROJECTION CHART (Chart.js) --- */
         function renderPayoffChart(activeSchedule, baselineSchedule) {
             const canvas = document.getElementById('loanChart');
             if (!canvas) return;
@@ -2416,7 +2451,6 @@
             }
         };
 
-        /* --- 8. HISTORY TABLE & EXPORT CSV --- */
         window.renderHistoryTable = function() {
             const tbody = document.getElementById('history-table-body');
             if (!tbody) return;
@@ -2486,7 +2520,6 @@
             downloadCSVFile(csv, `schedule_${window.planOwnerName}_${new Date().toISOString().split('T')[0]}.csv`);
         };
 
-        /* --- 9. NEW USER / PROFILE CREATION LOGIC --- */
         window.openNewProfileModal = function(isNewProfile = true) {
             window.isModalCreatingNewProfile = isNewProfile;
             const modal = document.getElementById('new-user-modal');
@@ -2608,7 +2641,6 @@
             } else {
                 newUserLoansDraft[idx][field] = parseFloat(val) || 0;
             }
-            // Update only summary numbers at bottom; do not rebuild the input DOM elements
             updateNewUserTotals();
         };
 
@@ -2639,7 +2671,7 @@
                     principal: principal,
                     initialPrincipal: principal,
                     minPay: minPay,
-                    lastPaidDate: today,
+                    lastPaidDate: new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0],
                     color: index === 0 ? 'indigo' : (index === 1 ? 'rose' : 'emerald'),
                     icon: index === 0 ? 'ph-house' : 'ph-shield-check'
                 };
@@ -2651,7 +2683,6 @@
             }
 
             if (window.isModalCreatingNewProfile) {
-                // New distinct workspace
                 const newProfileId = "prof_" + Date.now();
                 window.profilesStore[newProfileId] = {
                     id: newProfileId,
@@ -2680,7 +2711,6 @@
                 saveProfilesManifest();
                 showToast(`สร้างโปรไฟล์ "${newName}" เรียบร้อยแล้ว`);
             } else {
-                // Configure existing workspace
                 window.planOwnerName = newName;
                 window.loans = preparedLoans;
                 window.historyLogs = [
@@ -2754,7 +2784,6 @@
             );
         };
 
-        /* --- 10. MONTHLY & YEAR-END REPORTS ENGINE --- */
         window.openMonthlyReportModal = function() {
             const modal = document.getElementById('monthly-report-modal');
             if (modal) {
@@ -2779,7 +2808,22 @@
             if (!ySelect || !mSelect) return;
 
             const curYear = new Date().getFullYear();
-            ySelect.innerHTML = `<option value="${curYear}">พ.ศ. ${curYear + 543} (${curYear})</option><option value="${curYear - 1}">พ.ศ. ${curYear + 542} (${curYear - 1})</option>`;
+            const historyYears = (window.historyLogs || []).map(h => {
+                if (h.date && h.date.includes('-')) return parseInt(h.date.split('-')[0]);
+                return null;
+            }).filter(Boolean);
+
+            const yearsSet = new Set([curYear, curYear - 1, ...historyYears]);
+            const sortedYears = Array.from(yearsSet).sort((a, b) => b - a);
+
+            ySelect.innerHTML = '';
+            sortedYears.forEach(y => {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.innerText = `พ.ศ. ${y + 543} (${y})`;
+                if (y === curYear) opt.selected = true;
+                ySelect.appendChild(opt);
+            });
 
             const months = [
                 "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
@@ -2867,7 +2911,6 @@
                     const loanTxs = matchedLogs.filter(tx => tx.loanId === l.id);
                     const thisLoanPaid = loanTxs.reduce((sum, tx) => sum + tx.principalPaid, 0);
                     
-                    // Deriving historical principal accurately
                     const endP = loanTxs.length > 0 ? loanTxs[loanTxs.length - 1].remainingPrincipal : l.principal;
                     const startP = endP + thisLoanPaid;
                     const dropPct = startP > 0 ? ((thisLoanPaid / startP) * 100).toFixed(1) : '0.0';
@@ -2913,10 +2956,22 @@
             const select = document.getElementById('report-year-select');
             if (!select) return;
             const curYear = new Date().getFullYear();
-            select.innerHTML = `
-                <option value="${curYear}">พ.ศ. ${curYear + 543} (${curYear})</option>
-                <option value="${curYear - 1}">พ.ศ. ${curYear + 542} (${curYear - 1})</option>
-            `;
+            const historyYears = (window.historyLogs || []).map(h => {
+                if (h.date && h.date.includes('-')) return parseInt(h.date.split('-')[0]);
+                return null;
+            }).filter(Boolean);
+
+            const yearsSet = new Set([curYear, curYear - 1, ...historyYears]);
+            const sortedYears = Array.from(yearsSet).sort((a, b) => b - a);
+
+            select.innerHTML = '';
+            sortedYears.forEach(y => {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.innerText = `พ.ศ. ${y + 543} (${y})`;
+                if (y === curYear) opt.selected = true;
+                select.appendChild(opt);
+            });
         }
 
         window.generateYearEndReportData = function() {
@@ -3010,7 +3065,6 @@
             window.print();
         };
 
-        /* --- 11. OPPORTUNITY COST & CLOUD BACKUP --- */
         window.openOpportunityModal = function() {
             const modal = document.getElementById('opportunity-modal');
             if (modal) {
@@ -3088,7 +3142,7 @@
 
         window.exportJSONBackup = function() {
             saveProfilesManifest();
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(localStorage.getItem(PROFILES_STORAGE_KEY));
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(localStorage.getItem(PROFILES_STORAGE_KEY) || '{}');
             const dl = document.createElement('a');
             dl.setAttribute("href", dataStr);
             dl.setAttribute("download", `debt_tracker_backup_${new Date().toISOString().split('T')[0]}.json`);
@@ -3098,16 +3152,20 @@
 
         window.shareBackupFile = function() {
             saveProfilesManifest();
-            const jsonText = localStorage.getItem(PROFILES_STORAGE_KEY);
-            const file = new File([jsonText], `loan_tracker_backup_${new Date().toISOString().split('T')[0]}.json`, { type: 'application/json' });
+            const jsonText = localStorage.getItem(PROFILES_STORAGE_KEY) || '{}';
+            try {
+                const file = new File([jsonText], `loan_tracker_backup_${new Date().toISOString().split('T')[0]}.json`, { type: 'application/json' });
 
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({
-                    files: [file],
-                    title: 'สำรองข้อมูลหนี้บ้าน',
-                    text: 'ไฟล์สำรองข้อมูลแผนการจัดการหนี้บ้าน'
-                }).catch(e => console.warn("Share sheet dismissed:", e));
-            } else {
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'สำรองข้อมูลหนี้บ้าน',
+                        text: 'ไฟล์สำรองข้อมูลแผนการจัดการหนี้บ้าน'
+                    }).catch(e => console.warn("Share sheet dismissed:", e));
+                } else {
+                    exportJSONBackup();
+                }
+            } catch (err) {
                 exportJSONBackup();
             }
         };
@@ -3138,7 +3196,6 @@
             event.target.value = '';
         };
 
-        /* --- 12. SCHEDULE MONTH OVERRIDE MODAL --- */
         window.openEditScheduleMonthModal = function(idx) {
             currentEditingScheduleMonthIdx = idx;
             const row = (window.lastComputedSchedule || []).find(r => r.idx === idx);
