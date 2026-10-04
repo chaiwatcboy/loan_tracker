@@ -25,6 +25,11 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
         /* Custom Scrollbar for Smooth Table Navigation */
         ::-webkit-scrollbar {
             width: 6px;
@@ -47,6 +52,7 @@
                 background: white !important;
                 color: black !important;
                 font-size: 11pt !important;
+                padding: 0 !important;
             }
             .no-print, header, footer, #toast-box, button, nav {
                 display: none !important;
@@ -110,7 +116,7 @@
                     </div>
 
                     <!-- New Profile / Plan Button -->
-                    <button type="button" onclick="openNewProfileModal()" class="px-2.5 sm:px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm shadow-indigo-200 active:scale-95" title="สร้างโปรไฟล์ใหม่">
+                    <button type="button" onclick="openNewProfileModal(true)" class="px-2.5 sm:px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm shadow-indigo-200 active:scale-95" title="สร้างโปรไฟล์ใหม่">
                         <i class="ph-bold ph-plus-circle text-sm"></i>
                         <span class="hidden sm:inline">+ สร้างโปรไฟล์ใหม่</span>
                         <span class="sm:hidden">+ เพิ่ม</span>
@@ -283,23 +289,41 @@
                         </div>
                     </div>
 
-                    <!-- Interest Split Section (Auto-switches with Payment Mode) -->
+                    <!-- Interest Split Section (Preserved DOM Architecture to prevent null references) -->
                     <div id="interest-split-container" class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="font-semibold text-slate-700">หักดอกเบี้ยสะสมตามวันจริง (Actual/365)</span>
-                            <span id="calculated-interest-display" class="font-bold text-amber-700">฿0.00</span>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                            <div>
-                                <label class="block text-[11px] font-medium text-slate-500 mb-0.5">ดอกเบี้ยที่หัก (ปรับแก้ตามสลิปได้)</label>
-                                <input type="number" step="0.01" min="0" id="pay-interest" oninput="onPayInterestInput(this.value)" placeholder="0.00" class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-amber-700 focus:outline-none">
-                                <div id="pay-interest-preview" class="text-[10px] text-amber-600 mt-0.5 pl-1">≈ ฿0.00</div>
+                        
+                        <!-- Normal Mode Display Block -->
+                        <div id="split-block-normal" class="space-y-2">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="font-semibold text-slate-700">หักดอกเบี้ยสะสมตามวันจริง (Actual/365)</span>
+                                <span id="calculated-interest-display" class="font-bold text-amber-700">฿0.00</span>
                             </div>
-                            <div class="flex flex-col justify-center">
-                                <div class="text-[11px] font-medium text-slate-500">เงินตัดเข้าเงินต้นสุทธิ</div>
-                                <div id="net-principal-paid-preview" class="text-sm font-black text-emerald-700 mt-0.5">฿0.00</div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                <div>
+                                    <label class="block text-[11px] font-medium text-slate-500 mb-0.5">ดอกเบี้ยที่หัก (ปรับแก้ตามสลิปได้)</label>
+                                    <input type="number" step="0.01" min="0" id="pay-interest" oninput="onPayInterestInput(this.value)" placeholder="0.00" class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-amber-700 focus:outline-none">
+                                    <div id="pay-interest-preview" class="text-[10px] text-amber-600 mt-0.5 pl-1">≈ ฿0.00</div>
+                                </div>
+                                <div class="flex flex-col justify-center">
+                                    <div class="text-[11px] font-medium text-slate-500">เงินตัดเข้าเงินต้นสุทธิ</div>
+                                    <div id="net-principal-paid-preview" class="text-sm font-black text-emerald-700 mt-0.5">฿0.00</div>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Prepayment Mode Display Block (Toggled smoothly) -->
+                        <div id="split-block-prepay" class="hidden space-y-1.5">
+                            <div class="flex items-center justify-between text-xs font-bold text-emerald-900">
+                                <span class="flex items-center gap-1.5"><i class="ph-fill ph-lightning text-amber-500"></i> โหมดโปะเพิ่มวันเดียวกัน:</span>
+                                <span class="text-emerald-700 font-black">ดอกเบี้ย ฿0.00 บาท (ตัดต้น 100%)</span>
+                            </div>
+                            <p class="text-[11px] text-emerald-700">ค่างวดปกติได้ตัดดอกเบี้ยประจำเดือนไปหมดแล้ว ยอดโปะในวันนี้จึงวิ่งเข้าตัดเงินต้นเต็มจำนวนทันที</p>
+                            <div class="flex items-center justify-between text-xs pt-1 border-t border-emerald-200/60">
+                                <span class="font-medium text-slate-600">เงินตัดเข้าเงินต้นสุทธิ:</span>
+                                <span id="prepay-net-principal-preview" class="text-base font-black text-emerald-700">฿0.00</span>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- Note -->
@@ -622,7 +646,7 @@
                     </button>
                 </div>
                 <div id="new-user-rows-container" class="space-y-2.5 max-h-56 overflow-y-auto pr-1">
-                    <!-- Populated dynamically -->
+                    <!-- Populated dynamically without destroying active focus -->
                 </div>
             </div>
 
@@ -1054,7 +1078,7 @@
         </div>
     </div>
 
-    <!-- MODAL 9: Custom Notification / Confirmation Modal (Never browser alert) -->
+    <!-- MODAL 9: Custom Confirmation Modal (Never browser alert) -->
     <div id="confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
             <h3 class="text-base font-bold text-slate-900" id="confirm-modal-title">ยืนยันการทำรายการ</h3>
@@ -1537,24 +1561,26 @@
             currentPaymentMode = mode;
             const tabNormal = document.getElementById('tab-mode-normal');
             const tabPrepay = document.getElementById('tab-mode-prepay');
-            const splitBox = document.getElementById('interest-split-container');
+            const blockNormal = document.getElementById('split-block-normal');
+            const blockPrepay = document.getElementById('split-block-prepay');
             const submitBtn = document.getElementById('submit-pay-btn');
+            const interestContainer = document.getElementById('interest-split-container');
 
             if (mode === 'prepay') {
                 if (tabNormal) tabNormal.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition";
                 if (tabPrepay) tabPrepay.className = "px-3 py-1.5 rounded-lg bg-emerald-600 text-white shadow-xs transition flex items-center gap-1 font-bold";
-                if (splitBox) {
-                    splitBox.className = "p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 space-y-2";
-                    splitBox.innerHTML = `
-                        <div class="flex items-center justify-between text-xs font-bold text-emerald-900">
-                            <span class="flex items-center gap-1.5"><i class="ph-fill ph-lightning text-amber-500"></i> โหมดโปะเพิ่มวันเดียวกัน:</span>
-                            <span class="text-emerald-700 font-black">ดอกเบี้ย ฿0.00 บาท (ตัดต้น 100%)</span>
-                        </div>
-                        <p class="text-[11px] text-emerald-700">ค่างวดปกติได้ตัดดอกเบี้ยประจำเดือนไปหมดแล้ว ยอดโปะในวันนี้จึงวิ่งเข้าตัดเงินต้นเต็มจำนวนทันที</p>
-                    `;
-                }
+                
+                if (interestContainer) interestContainer.className = "p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 space-y-2";
+                if (blockNormal) blockNormal.classList.add('hidden');
+                if (blockPrepay) blockPrepay.classList.remove('hidden');
+
                 const interestInput = document.getElementById('pay-interest');
                 if (interestInput) interestInput.value = 0;
+
+                const curAmount = parseFloat(document.getElementById('pay-amount')?.value) || 0;
+                const prepayPreview = document.getElementById('prepay-net-principal-preview');
+                if (prepayPreview) prepayPreview.innerText = formatMoney(curAmount);
+
                 if (submitBtn) {
                     submitBtn.className = "w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 shadow-md shadow-emerald-200 active:scale-95";
                     submitBtn.innerHTML = `<i class="ph-bold ph-lightning text-base"></i><span>⚡ บันทึกยอดโปะเพิ่ม (ตัดต้น 100% ไร้ดอกเบี้ย)</span>`;
@@ -1562,29 +1588,14 @@
             } else {
                 if (tabNormal) tabNormal.className = "px-3 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition font-bold";
                 if (tabPrepay) tabPrepay.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1";
-                if (splitBox) {
-                    splitBox.className = "p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2";
-                    splitBox.innerHTML = `
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="font-semibold text-slate-700">หักดอกเบี้ยสะสมตามวันจริง (Actual/365)</span>
-                            <span id="calculated-interest-display" class="font-bold text-amber-700">฿0.00</span>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                            <div>
-                                <label class="block text-[11px] font-medium text-slate-500 mb-0.5">ดอกเบี้ยที่หัก (ปรับแก้ตามสลิปได้)</label>
-                                <input type="number" step="0.01" min="0" id="pay-interest" oninput="onPayInterestInput(this.value)" placeholder="0.00" class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-amber-700 focus:outline-none">
-                                <div id="pay-interest-preview" class="text-[10px] text-amber-600 mt-0.5 pl-1">≈ ฿0.00</div>
-                            </div>
-                            <div class="flex flex-col justify-center">
-                                <div class="text-[11px] font-medium text-slate-500">เงินตัดเข้าเงินต้นสุทธิ</div>
-                                <div id="net-principal-paid-preview" class="text-sm font-black text-emerald-700 mt-0.5">฿0.00</div>
-                            </div>
-                        </div>
-                    `;
-                }
+                
+                if (interestContainer) interestContainer.className = "p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2";
+                if (blockNormal) blockNormal.classList.remove('hidden');
+                if (blockPrepay) blockPrepay.classList.add('hidden');
+
                 if (submitBtn) {
                     submitBtn.className = "w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 shadow-md shadow-indigo-100 active:scale-95";
-                    submitBtn.innerHTML = `<i class="ph-bold ph-check-circle text-base"></i><span>บันทึกการชำระเงินปกติ</span>`;
+                    submitBtn.innerHTML = `<i class="ph-bold ph-check-circle text-base"></i><span>บันทึกการชำระเงิน</span>`;
                 }
                 recalculateNormalPaymentSplit();
             }
@@ -1644,15 +1655,14 @@
             const loan = (window.loans || []).find(l => l.id === loanId);
             if (!loan || loan.principal <= 0) return;
 
-            // Correct mathematical formula to eliminate decimal cents
-            const dec = loan.principal - Math.floor(loan.principal);
-            const neededToRound = (dec > 0.001) ? dec : 0;
-
-            if (neededToRound <= 0) {
+            // Safe floating point decimal rounding (integer cents)
+            const cents = Math.round((loan.principal - Math.floor(loan.principal)) * 100);
+            if (cents <= 0) {
                 showToast("ยอดเงินต้นก้อนนี้ลงตัว .00 อยู่แล้วครับ", "amber");
                 return;
             }
 
+            const neededToRound = cents / 100;
             setPaymentMode('prepay');
             const payAmountInput = document.getElementById('pay-amount');
             if (payAmountInput) {
@@ -1674,6 +1684,10 @@
             const num = parseFloat(val) || 0;
             const preview = document.getElementById('pay-amount-preview');
             if (preview) preview.innerText = `≈ ${formatMoney(num)} (${formatNumber(num)} บาท)`;
+            
+            const prepayPreview = document.getElementById('prepay-net-principal-preview');
+            if (prepayPreview) prepayPreview.innerText = formatMoney(num);
+
             if (currentPaymentMode === 'normal') {
                 recalculateNormalPaymentSplit();
             } else {
@@ -2000,8 +2014,13 @@
                 if (endBalanceAll <= 0.01) break;
             }
 
-            const finalDate = new Date(startDate.getFullYear(), startDate.getMonth() + monthCount, 1);
-            const payoffDateStr = finalDate.toLocaleDateString('th-TH', { month: 'long', year: 'numeric' });
+            let payoffDateStr = '-';
+            if (monthCount >= MAX_MONTHS && simLoans.some(l => l.principal > 0.01)) {
+                payoffDateStr = "> 40 ปี (ยอดผ่อนไม่พอตัดดอกเบี้ย)";
+            } else {
+                const finalDate = new Date(startDate.getFullYear(), startDate.getMonth() + monthCount, 1);
+                payoffDateStr = finalDate.toLocaleDateString('th-TH', { month: 'long', year: 'numeric' });
+            }
 
             return {
                 months: monthCount,
@@ -2128,9 +2147,9 @@
         };
 
         window.onScheduleInlineChange = function(monthIdx, field, val) {
-            const num = parseFloat(val) || 0;
+            const num = Math.max(0, parseFloat(val) || 0);
             if (!window.scheduleOverrides[monthIdx]) {
-                const row = window.lastComputedSchedule.find(r => r.idx === monthIdx);
+                const row = (window.lastComputedSchedule || []).find(r => r.idx === monthIdx);
                 window.scheduleOverrides[monthIdx] = {
                     pay: row ? row.pay : 0,
                     interest: row ? row.interest : 0,
@@ -2203,7 +2222,7 @@
 
             if (isNaN(targetAge) || targetAge <= currentAge) {
                 const res = document.getElementById('target-age-result');
-                if (res) res.innerHTML = `<span class="text-rose-600 font-bold">⚠️ อายุเป้าหมายต้องมากกว่าอายุปัจจุบัน (${currentAge} ปี)</span>`;
+                if (res) res.innerHTML = `<span class="text-rose-600 font-bold">⚠️️ อายุเป้าหมายต้องมากกว่าอายุปัจจุบัน (${currentAge} ปี)</span>`;
                 return;
             }
 
@@ -2214,7 +2233,7 @@
             const totalPrincipal = window.loans.reduce((sum, l) => sum + (l.principal || 0), 0);
 
             let low = totalMin;
-            let high = Math.max(totalMin * 4, Math.ceil(totalPrincipal / targetMonths) * 1.5, 100000);
+            let high = Math.max(totalMin * 10, (totalPrincipal / targetMonths) * 2.5, 300000);
             let bestBudget = high;
 
             // Binary search 15 iterations to determine exact budget
@@ -2274,7 +2293,6 @@
             if (slider && val) slider.value = val;
             const formatted = document.getElementById('schedule-budget-formatted');
             if (formatted) formatted.innerText = `≈ ${formatMoney(val)}`;
-            // Do not force overwrite input while typing to prevent input lockup
         };
 
         window.onScheduleBudgetBlur = function() {
@@ -2517,18 +2535,25 @@
             renderNewUserFormRows();
         };
 
+        function updateNewUserTotals() {
+            let totalP = 0;
+            let totalM = 0;
+            newUserLoansDraft.forEach(loan => {
+                totalP += parseFloat(loan.principal) || 0;
+                totalM += parseFloat(loan.minPay) || 0;
+            });
+            const pEl = document.getElementById('new-user-total-principal');
+            const mEl = document.getElementById('new-user-total-min');
+            if (pEl) pEl.innerText = formatMoney(totalP);
+            if (mEl) mEl.innerText = formatMoney(totalM);
+        }
+
         function renderNewUserFormRows() {
             const container = document.getElementById('new-user-rows-container');
             if (!container) return;
             container.innerHTML = '';
 
-            let totalP = 0;
-            let totalM = 0;
-
             newUserLoansDraft.forEach((loan, idx) => {
-                totalP += parseFloat(loan.principal) || 0;
-                totalM += parseFloat(loan.minPay) || 0;
-
                 const row = document.createElement('div');
                 row.className = "p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2";
                 row.innerHTML = `
@@ -2539,27 +2564,26 @@
                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
                         <div class="sm:col-span-1">
                             <span class="text-[10px] text-slate-500 font-medium">ชื่อสัญญา</span>
-                            <input type="text" value="${escapeHtml(loan.name)}" oninput="updateDraftLoan(${idx}, 'name', this.value)" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-800">
+                            <input type="text" value="${escapeHtml(loan.name)}" oninput="updateDraftLoan(${idx}, 'name', this.value)" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-800 focus:border-indigo-500 focus:outline-none">
                         </div>
                         <div>
                             <span class="text-[10px] text-slate-500 font-medium">เงินต้นคงเหลือ (บาท)</span>
-                            <input type="number" step="1000" value="${loan.principal}" oninput="updateDraftLoan(${idx}, 'principal', this.value)" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-900 text-right">
+                            <input type="number" step="1000" value="${loan.principal}" oninput="updateDraftLoan(${idx}, 'principal', this.value)" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-900 text-right focus:border-indigo-500 focus:outline-none">
                         </div>
                         <div>
                             <span class="text-[10px] text-slate-500 font-medium">ดอกเบี้ย (% ต่อปี)</span>
-                            <input type="number" step="0.05" value="${loan.rate}" oninput="updateDraftLoan(${idx}, 'rate', this.value)" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-amber-700 text-right">
+                            <input type="number" step="0.05" value="${loan.rate}" oninput="updateDraftLoan(${idx}, 'rate', this.value)" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-amber-700 text-right focus:border-indigo-500 focus:outline-none">
                         </div>
                         <div>
                             <span class="text-[10px] text-slate-500 font-medium">ค่างวดขั้นต่ำ (บาท)</span>
-                            <input type="number" step="100" value="${loan.minPay}" oninput="updateDraftLoan(${idx}, 'minPay', this.value)" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-indigo-700 text-right">
+                            <input type="number" step="100" value="${loan.minPay}" oninput="updateDraftLoan(${idx}, 'minPay', this.value)" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-indigo-700 text-right focus:border-indigo-500 focus:outline-none">
                         </div>
                     </div>
                 `;
                 container.appendChild(row);
             });
 
-            document.getElementById('new-user-total-principal').innerText = formatMoney(totalP);
-            document.getElementById('new-user-total-min').innerText = formatMoney(totalM);
+            updateNewUserTotals();
         }
 
         window.addNewUserRow = function() {
@@ -2578,12 +2602,14 @@
         };
 
         window.updateDraftLoan = function(idx, field, val) {
+            if (!newUserLoansDraft[idx]) return;
             if (field === 'name') {
                 newUserLoansDraft[idx].name = val;
             } else {
                 newUserLoansDraft[idx][field] = parseFloat(val) || 0;
             }
-            renderNewUserFormRows();
+            // Update only summary numbers at bottom; do not rebuild the input DOM elements
+            updateNewUserTotals();
         };
 
         window.saveNewUserPlan = function() {
@@ -2838,8 +2864,11 @@
             if (moveTbody) {
                 moveTbody.innerHTML = '';
                 (window.loans || []).forEach(l => {
-                    const thisLoanPaid = matchedLogs.filter(tx => tx.loanId === l.id).reduce((sum, tx) => sum + tx.principalPaid, 0);
-                    const endP = l.principal;
+                    const loanTxs = matchedLogs.filter(tx => tx.loanId === l.id);
+                    const thisLoanPaid = loanTxs.reduce((sum, tx) => sum + tx.principalPaid, 0);
+                    
+                    // Deriving historical principal accurately
+                    const endP = loanTxs.length > 0 ? loanTxs[loanTxs.length - 1].remainingPrincipal : l.principal;
                     const startP = endP + thisLoanPaid;
                     const dropPct = startP > 0 ? ((thisLoanPaid / startP) * 100).toFixed(1) : '0.0';
 
@@ -3154,7 +3183,7 @@
         };
 
         window.onSchedModalPayInput = function(val) {
-            const num = parseFloat(val) || 0;
+            const num = Math.max(0, parseFloat(val) || 0);
             const checkbox = document.getElementById('edit-sched-use-manual-split');
             if (checkbox && !checkbox.checked) {
                 const interest = parseFloat(document.getElementById('edit-sched-interest')?.value) || 0;
@@ -3164,14 +3193,14 @@
         };
 
         window.onSchedModalInterestInput = function(val) {
-            const intVal = parseFloat(val) || 0;
+            const intVal = Math.max(0, parseFloat(val) || 0);
             const payVal = parseFloat(document.getElementById('edit-sched-total-pay')?.value) || 0;
             const principalInput = document.getElementById('edit-sched-principal');
             if (principalInput) principalInput.value = Math.max(0, payVal - intVal).toFixed(2);
         };
 
         window.onSchedModalPrincipalInput = function(val) {
-            const pVal = parseFloat(val) || 0;
+            const pVal = Math.max(0, parseFloat(val) || 0);
             const intVal = parseFloat(document.getElementById('edit-sched-interest')?.value) || 0;
             const payInput = document.getElementById('edit-sched-total-pay');
             if (payInput) payInput.value = (pVal + intVal).toFixed(2);
@@ -3181,9 +3210,9 @@
             const idx = currentEditingScheduleMonthIdx;
             if (!idx) return;
 
-            const pay = parseFloat(document.getElementById('edit-sched-total-pay')?.value) || 0;
-            const interest = parseFloat(document.getElementById('edit-sched-interest')?.value) || 0;
-            const principal = parseFloat(document.getElementById('edit-sched-principal')?.value) || 0;
+            const pay = Math.max(0, parseFloat(document.getElementById('edit-sched-total-pay')?.value) || 0);
+            const interest = Math.max(0, parseFloat(document.getElementById('edit-sched-interest')?.value) || 0);
+            const principal = Math.max(0, parseFloat(document.getElementById('edit-sched-principal')?.value) || 0);
             const isManualSplit = document.getElementById('edit-sched-use-manual-split')?.checked || false;
             const note = document.getElementById('edit-sched-note')?.value.trim() || '✎ ปรับแต่งเอง';
 
